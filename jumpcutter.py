@@ -60,13 +60,11 @@ parser.add_argument('--silent_speed', type=float, default=5.00,
                     help="the speed that silent frames should be played at. 999999 for jumpcutting.")
 parser.add_argument('--frame_margin', type=float, default=1,
                     help="some silent frames adjacent to sounded frames are included to provide context. How many frames on either the side of speech should be included? That's this variable.")
-parser.add_argument('--sample_rate', type=float, default=44100, help="sample rate of the input and output videos")
 parser.add_argument('--frame_quality', type=int, default=3,
                     help="quality of frames to be extracted from input video. 1 is highest, 31 is lowest, 3 is the default.")
 
 args = parser.parse_args()
 
-SAMPLE_RATE = args.sample_rate
 SILENT_THRESHOLD = args.silent_threshold
 FRAME_SPREADAGE = args.frame_margin
 NEW_SPEED = [args.silent_speed, args.sounded_speed]
@@ -84,6 +82,12 @@ TEMP_FOLDER = "TEMP"
 AUDIO_FADE_ENVELOPE_SIZE = 400  # smooth out transition's audio by quickly fading in/out (arbitrary magic number whatever)
 
 createPath(TEMP_FOLDER)
+
+# Get sample rate with ffprobe
+command = "ffprobe -v error -show_entries stream=sample_rate -of default=noprint_wrappers=1:nokey=1 " + INPUT_FILE
+stdout = subprocess.run(command, capture_output=True, text=True).stdout
+print("Detected sample rate: " + str(stdout))
+frameRate = int(stdout)
 
 command = "ffmpeg -i " + INPUT_FILE + " -qscale:v " + str(
     FRAME_QUALITY) + " " + TEMP_FOLDER + "/frame%06d.jpg -hide_banner"
