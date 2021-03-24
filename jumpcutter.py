@@ -75,7 +75,6 @@ SILENT_THRESHOLD = args.silent_threshold
 FRAME_SPREADAGE = args.frame_margin
 NEW_SPEED = [args.silent_speed, args.sounded_speed]
 INPUT_FILE = args.input_file
-URL = args.url
 FRAME_QUALITY = args.frame_quality
 
 assert INPUT_FILE != None, "why u put no input file, that dum"
