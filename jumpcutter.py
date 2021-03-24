@@ -33,7 +33,6 @@ def inputToOutputFilename(filename):
 
 def createPath(s):
     # assert (not os.path.exists(s)), "The filepath "+s+" already exists. Don't want to overwrite it. Aborting."
-
     try:
         os.mkdir(s)
     except OSError:
@@ -77,7 +76,7 @@ NEW_SPEED = [args.silent_speed, args.sounded_speed]
 INPUT_FILE = args.input_file
 FRAME_QUALITY = args.frame_quality
 
-assert INPUT_FILE != None, "why u put no input file, that dum"
+assert INPUT_FILE is not None, "why u put no input file, that dum"
 
 if len(args.output_file) >= 1:
     OUTPUT_FILE = args.output_file
@@ -85,7 +84,7 @@ else:
     OUTPUT_FILE = inputToOutputFilename(INPUT_FILE)
 
 TEMP_FOLDER = "TEMP"
-AUDIO_FADE_ENVELOPE_SIZE = 400  # smooth out transitiion's audio by quickly fading in/out (arbitrary magic number whatever)
+AUDIO_FADE_ENVELOPE_SIZE = 400  # smooth out transition's audio by quickly fading in/out (arbitrary magic number whatever)
 
 createPath(TEMP_FOLDER)
 
@@ -113,7 +112,7 @@ samplesPerFrame = sampleRate / frameRate
 
 audioFrameCount = int(math.ceil(audioSampleCount / samplesPerFrame))
 
-hasLoudAudio = np.zeros((audioFrameCount))
+hasLoudAudio = np.zeros(audioFrameCount)
 
 for i in range(audioFrameCount):
     start = int(i * samplesPerFrame)
@@ -124,12 +123,12 @@ for i in range(audioFrameCount):
         hasLoudAudio[i] = 1
 
 chunks = [[0, 0, 0]]
-shouldIncludeFrame = np.zeros((audioFrameCount))
+shouldIncludeFrame = np.zeros(audioFrameCount)
 for i in range(audioFrameCount):
     start = int(max(0, i - FRAME_SPREADAGE))
     end = int(min(audioFrameCount, i + 1 + FRAME_SPREADAGE))
     shouldIncludeFrame[i] = np.max(hasLoudAudio[start:end])
-    if (i >= 1 and shouldIncludeFrame[i] != shouldIncludeFrame[i - 1]):  # Did we flip?
+    if i >= 1 and shouldIncludeFrame[i] != shouldIncludeFrame[i - 1]:  # Did we flip?
         chunks.append([chunks[-1][1], i, shouldIncludeFrame[i - 1]])
 
 chunks.append([chunks[-1][1], audioFrameCount, shouldIncludeFrame[i - 1]])
@@ -157,7 +156,6 @@ for chunk in chunks:
     # outputAudioData[outputPointer:endPointer] = alteredAudioData/maxAudioVolume
 
     # smooth out transition's audio by quickly fading in/out
-
     if leng < AUDIO_FADE_ENVELOPE_SIZE:
         outputAudioData[outputPointer:endPointer] = 0  # audio is less than 0.01 sec, let's just remove it.
     else:
