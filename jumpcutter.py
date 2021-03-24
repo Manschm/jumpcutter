@@ -87,7 +87,7 @@ createPath(TEMP_FOLDER)
 command = "ffprobe -v error -show_entries stream=sample_rate -of default=noprint_wrappers=1:nokey=1 " + INPUT_FILE
 stdout = subprocess.run(command, capture_output=True, text=True).stdout
 print("Detected sample rate: " + str(stdout))
-frameRate = int(stdout)
+SAMPLE_RATE = int(stdout)
 
 command = "ffmpeg -i " + INPUT_FILE + " -qscale:v " + str(
     FRAME_QUALITY) + " " + TEMP_FOLDER + "/frame%06d.jpg -hide_banner"
