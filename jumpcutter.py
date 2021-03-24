@@ -78,9 +78,9 @@ if len(args.output_file) >= 1:
 else:
     OUTPUT_FILE = inputToOutputFilename(INPUT_FILE)
 
-TEMP_FOLDER = "TEMP"
 AUDIO_FADE_ENVELOPE_SIZE = 400  # smooth out transition's audio by quickly fading in/out (arbitrary magic number whatever)
 
+TEMP_FOLDER = "TEMP"
 createPath(TEMP_FOLDER)
 
 # Get sample rate with ffprobe
@@ -89,12 +89,13 @@ stdout = subprocess.run(command, capture_output=True, text=True).stdout
 print("Detected sample rate: " + str(stdout))
 SAMPLE_RATE = int(stdout)
 
-command = "ffmpeg -i " + INPUT_FILE + " -qscale:v " + str(
+# Extract every frame from video and save in temp folder
+command = "ffmpeg -i " + INPUT_FILE + " -qscale:v " + str(  # Omitting the -qscale option takes longer but requires less space
     FRAME_QUALITY) + " " + TEMP_FOLDER + "/frame%06d.jpg -hide_banner"
 subprocess.call(command, shell=True)
 
-command = "ffmpeg -i " + INPUT_FILE + " -f " + TEMP_FOLDER + "/audio.wav"
-
+# Extract audio from video and save as .wav in temp folder
+command = "ffmpeg -i " + INPUT_FILE + " -f wav " + TEMP_FOLDER + "/audio.wav"
 subprocess.call(command, shell=True)
 
 sampleRate, audioData = wavfile.read(TEMP_FOLDER + "/audio.wav")
@@ -110,9 +111,7 @@ return_values = [int(val) for val in stdout.split('/')]
 frameRate = return_values[0] / return_values[1]
 
 samplesPerFrame = sampleRate / frameRate
-
 audioFrameCount = int(math.ceil(audioSampleCount / samplesPerFrame))
-
 hasLoudAudio = np.zeros(audioFrameCount)
 
 for i in range(audioFrameCount):
