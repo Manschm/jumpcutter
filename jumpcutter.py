@@ -1,11 +1,8 @@
-from contextlib import closing
-from PIL import Image
 import subprocess
 from audiotsm import phasevocoder
 from audiotsm.io.wav import WavReader, WavWriter
 from scipy.io import wavfile
 import numpy as np
-import re
 import math
 from shutil import copyfile, rmtree
 import os
