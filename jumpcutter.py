@@ -10,14 +10,6 @@ import math
 from shutil import copyfile, rmtree
 import os
 import argparse
-from pytube import YouTube
-
-
-def downloadFile(url):
-    name = YouTube(url).streams.first().download()
-    newname = name.replace(' ', '_')
-    os.rename(name, newname)
-    return newname
 
 
 def getMaxVolume(s):
@@ -62,7 +54,6 @@ def deletePath(s):  # Dangerous! Watch out!
 parser = argparse.ArgumentParser(
     description='Modifies a video file to play at different speeds when there is sound vs. silence.')
 parser.add_argument('--input_file', type=str, help='the video file you want modified')
-parser.add_argument('--url', type=str, help='A youtube url to download and process')
 parser.add_argument('--output_file', type=str, default="",
                     help="the output file. (optional. if not included, it'll just modify the input file name)")
 parser.add_argument('--silent_threshold', type=float, default=0.03,
@@ -86,10 +77,7 @@ SAMPLE_RATE = args.sample_rate
 SILENT_THRESHOLD = args.silent_threshold
 FRAME_SPREADAGE = args.frame_margin
 NEW_SPEED = [args.silent_speed, args.sounded_speed]
-if args.url != None:
-    INPUT_FILE = downloadFile(args.url)
-else:
-    INPUT_FILE = args.input_file
+INPUT_FILE = args.input_file
 URL = args.url
 FRAME_QUALITY = args.frame_quality
 
@@ -172,7 +160,7 @@ for chunk in chunks:
 
     # outputAudioData[outputPointer:endPointer] = alteredAudioData/maxAudioVolume
 
-    # smooth out transitiion's audio by quickly fading in/out
+    # smooth out transition's audio by quickly fading in/out
 
     if leng < AUDIO_FADE_ENVELOPE_SIZE:
         outputAudioData[outputPointer:endPointer] = 0  # audio is less than 0.01 sec, let's just remove it.
